@@ -1,0 +1,50 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}      % include this line if your document contains figures
+\usepackage{enumerate}
+\usepackage{cite}
+\usepackage{circuitikz}
+\usetikzlibrary{patterns}
+\usetikzlibrary{shapes.geometric}
+
+
+\definecolor{msblue}{rgb}{0.357, 0.608, 0.835}
+\definecolor{msgreen}{rgb}{0.439, 0.678, 0.278}
+\definecolor{msred}{rgb}{0.753, 0, 0}
+\definecolor{msyellow}{rgb}{0.984, 0.737, 0.0196}
+
+
+
+\title{Figures for Unit 2 - Intro to Control}
+\date{\today}
+\author{Arne Dankers}
+
+
+\begin{document}
+\maketitle
+
+
+\begin{figure}[htp]
+    \begin{tikzpicture}
+        \node[rectangle,draw,minimum size=2cm] (M1) at (0,0) {$M_1$};
+        \node (Fb) at (0,3){$F_b$};
+        \node (Fd) at (0.5,-3) {$F_d$};
+        \node (Fg) at (-0.5,-3) {$F_g$};
+
+        \draw[->] (M1.north) -- (Fb);
+        \draw[->] ($(M1.south)-(0.5,0)$) -- (Fg);
+        \draw[->] ($(M1.south)+(0.5,0)$) -- (Fd);
+
+    \end{tikzpicture}
+\end{figure}
+
+
+
+
+
+
+\end{document}
