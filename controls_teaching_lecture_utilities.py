@@ -10,8 +10,6 @@ def sim_closed_loop(P,K,t,r,d,n):
     S = 1/(1+L)
     T = L/(1+L)   
 
-    print(S)
-
     y_r = ct.forced_response(T,t,r) 
     y_n = ct.forced_response(T,t,n) 
     y_d = ct.forced_response(P*S,t,d) 
