@@ -30,20 +30,55 @@
 
 \begin{figure}[htp]
     \begin{tikzpicture}
-        \node[rectangle,draw,minimum size=2cm] (M1) at (0,0) {$M_1$};
-        \node (Fb) at (0,3){$F_b$};
-        \node (Fd) at (0.5,-3) {$F_d$};
-        \node (Fg) at (-0.5,-3) {$F_g$};
+        \node[rectangle,draw,minimum size=2cm] (M1) at (0,0) {$m$};
+        \node (Fa) at (3,0){$F_a$};
+        \node (Fd) at (-3,0.5) {$F_d$};
+        \node (Ff) at (-3,-0.5) {$F_f$};
+        \node (Fg) at (0,-3) {$F_g$};
+        \node (Fn) at (0,3) {$F_n$};
 
-        \draw[->] (M1.north) -- (Fb);
-        \draw[->] ($(M1.south)-(0.5,0)$) -- (Fg);
-        \draw[->] ($(M1.south)+(0.5,0)$) -- (Fd);
+        \draw[->] (M1.east) -- (Fa);
+        \draw[->] ($(M1.west)-(0,0.5)$) -- (Ff);
+        \draw[->] ($(M1.west)+(0,0.5)$) -- (Fd);
+        \draw[->] (M1.south) -- (Fg);
+        \draw[->] (M1.north) -- (Fn);
 
     \end{tikzpicture}
 \end{figure}
 
 
 
+
+\begin{figure}[htb]
+    \begin{circuitikz}
+        \draw[fill=gray!40] (0,0) rectangle (3,3);
+        \draw (0.5,3) to[spring,l=$k$] (0.5,5);
+        \draw (1.5,3) to[damper,l_=$b$] (1.5,5);
+        \draw[fill=gray!40] (0,5) rectangle (3,8);
+        \node at (1.5,6.5) {$m$};
+        \draw[thick, ->] (2.5,3) -- (2.5,5);
+        \node at (2.75,4) {$F$};
+        \draw[fill=gray] (1.5,1.5) circle (0.75);
+        \draw (1.5,1.5) circle (5);
+    \end{circuitikz}
+\end{figure}
+
+
+\begin{figure}[htp]
+    \begin{tikzpicture}
+        \node[rectangle,draw,minimum size=2cm] (M1) at (0,0) {$M_1$};
+        \node (Fu) at (0,3){$F_u$};
+        \node (Fd) at (0.75,-3) {$F_d$};
+        \node (Fg) at (-0.75,-3) {$F_g$};
+        \node (Fs) at (0,-3) {$F_s$};
+
+        \draw[->] (M1.north) -- (Fu);
+        \draw[->] ($(M1.south)-(0.75,0)$) -- (Fg);
+        \draw[->] ($(M1.south)+(0.75,0)$) -- (Fd);
+        \draw[->] (M1.south) -- (Fs);
+
+    \end{tikzpicture}
+\end{figure}
 
 
 
