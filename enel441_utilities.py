@@ -2,6 +2,7 @@ import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import control as ct
 
 
 def eval_poly(poly, k):
@@ -432,3 +433,77 @@ def enel441_bode_plot(num, den, omega):
     fig.tight_layout(pad=1.5)
 
 
+
+def enel441_sim_closed_loop(P,K,t,r,d,n):
+    L = K*P
+    S = 1/(1+L)
+    T = L/(1+L)   
+
+    y_r = ct.forced_response(T,t,r) 
+    y_n = ct.forced_response(T,t,n) 
+    y_d = ct.forced_response(P*S,t,d) 
+
+    y = y_r.y + y_d.y + y_n.y
+
+    u_r = ct.forced_response(K*S,t,r) 
+    u_d = ct.forced_response(S,t,d) 
+    u_n = ct.forced_response(K*S,t,d) 
+
+    u = u_r.y + u_d.y - u_n.y
+
+    return np.squeeze(y), np.squeeze(u)
+
+
+def enel441_sim_open_loop(P,t,u,d):    
+    y_r = ct.forced_response(P,t,u) 
+    y_d = ct.forced_response(P,t,d) 
+    y = np.squeeze(y_r.y) + np.squeeze(y_d.y)  
+    return y
+
+
+def enel441_make_open_and_closed_loop_plots(t,r,d,n,y2,y1):
+    fig,ax = plt.subplots(1,3, figsize=(15,5) )
+    ax[0].plot(t,r)
+    ax[0].set_xlabel('Time (min)')
+    ax[0].set_ylabel('Speed (km/h)')
+    ax[0].set_title('Desired Speed')
+    ax[1].plot(t,d)
+    ax[1].set_xlabel('Time (min)')
+    ax[1].set_ylabel('Disturbance')
+    ax[1].set_title('Disturbance')   
+    ax[2].plot(t,n)    
+    ax[2].set_xlabel('Time (min)')
+    ax[2].set_ylabel('Measurement Noise (km/h)')
+    ax[2].set_title('Measurement Noise')
+        
+    fig.tight_layout()
+    
+    fig,ax = plt.subplots(1,1, figsize=(15,5))
+    ax.plot(t,r, label='Desired Speed')
+    ax.plot(t,y1, label='Speed Using Open Loop Control')   
+    ax.plot(t,y2, label='Speed Using Closed Loop Control') 
+    ax.set_xlabel('Time (min)')
+    ax.set_ylabel('Speed (km/h)')
+    ax.set_title('Comparison of Desired and Actual Speed')
+    plt.legend()
+
+
+
+def enel441_root_locus(num,den,min_k,max_k):
+    if len(num[0][0]) == len(den[0][0]):
+        print('Nothing to do.')
+        num_padded = num[0][0]
+        print(num[0][0])
+        print(den[0][0])
+    else:
+        num_padded = np.concatenate((np.zeros(len(den[0][0])-len(num[0][0])), num[0][0]))
+        print('Numerator:', num_padded)
+        print('Denominator:', den[0][0])
+
+    fig, ax = plt.subplots(1,1)
+    for k in range(min_k,max_k):
+        den_closed_loop = den[0][0] + k*num_padded
+        closed_loop_poles = np.roots(den_closed_loop)
+        ax.plot(np.real(closed_loop_poles),np.imag(closed_loop_poles), 'k.' )
+    
+    return fig, ax

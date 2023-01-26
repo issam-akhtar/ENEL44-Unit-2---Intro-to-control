@@ -83,8 +83,6 @@
 
 
 \begin{figure}[htb]
-
-\end{figure}
     \begin{tikzpicture}
         \node[circle,draw,minimum size=1cm] (sum_r) at (0,0) {};
         \node[rectangle,draw,minimum width=2cm,minimum height=1cm] (K) at (3,0) {$K$};
@@ -98,12 +96,35 @@
         \draw[->] (sum_r) -- node[above] {$\varepsilon$} (K);
         \draw[->] (K) -- (sum_d);
         \draw[->] (sum_d) -- node[above] {$u$} (P);
-        \draw[->] (P) -- (sum_n);
-        \draw[->] (sum_n) -- node[above] {$y$} ++(1,0) -- ++(0,-2) -- (0,-2) -- (sum_r);
+        \draw[->] (P) -- node[above] {$y$} (sum_n);
+        \draw[->] (sum_n) -- node[above] {$y_m$} ++(1,0) -- ++(0,-2) -- (0,-2) -- (sum_r);
         
         \draw[->] (r) -- (sum_r);
         \draw[->] (d) -- (sum_d);
         \draw[->] (n) -- (sum_n);
 
     \end{tikzpicture}
+\end{figure}
+
+
+\begin{figure}[htb]
+    \begin{tikzpicture}
+        \node[circle,draw,minimum size=1cm] (sum_d) at (0,0) {};
+        \node[rectangle,draw,minimum width=2cm,minimum height=1cm] (P) at (3,0) {$P$};
+        \node[circle,draw,minimum size=1cm] (sum_n) at (6,0) {};
+        \node (r) at (-2,0) {$r$};
+        \node (d) at (0,2) {$d$};
+        \node (n) at (6,2) {$n$};
+
+        \draw[->] (sum_d) -- node[above] {$u$} (P);
+        \draw[->] (P) -- node[above] {$y$} (sum_n);
+        
+        \draw[->] (r) -- (sum_r);
+        \draw[->] (d) -- (sum_d);
+        \draw[->] (n) -- (sum_n);
+        \draw[->] (sum_n) -- node[above] {$y_m$} ++(2,0);
+
+    \end{tikzpicture}
+\end{figure}
+
 \end{document}
