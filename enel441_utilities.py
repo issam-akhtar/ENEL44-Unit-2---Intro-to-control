@@ -261,6 +261,19 @@ def find_nearest(arr, value):
     idx = (np.abs(arr - value)).argmin()
     return idx
 
+def get_range_X(num,den,N):
+
+    roots_den = np.roots(den)
+    roots_num = np.roots(num)
+    den_corner_freqs = np.abs(roots_den)
+    num_corner_freqs = np.abs(roots_num)
+
+    omega_min = np.min( [np.min(den_corner_freqs), np.min(num_corner_freqs)] )
+    omega_max = np.max( [np.max(den_corner_freqs), np.max(num_corner_freqs)] )
+    omega = np.logspace(np.log10(omega_min/100),np.log10(omega_max*100),num=N)
+    return omega
+
+
 
 def enel441_approximate_bode(num_sys,den_sys,omega):
     N = omega.shape[0]
@@ -413,24 +426,25 @@ def enel441_annotated_bode_plot(num, den, omega):
     fig.tight_layout(pad=1.5)
 
 
-def enel441_bode_plot(num, den, omega):    
-    
-    G_jw = enel441_fourier_transform(num,den,omega)
+def enel441_bode(G_jw, omega, fig=[], ax=[], label=[]):
+    if not fig: 
+        fig, ax = plt.subplots(2,1)
 
-    fig, ax = plt.subplots(2,1)
+    
     mag_plot = 20*np.log10(np.abs(G_jw))
-    ax[0].semilogx(omega, mag_plot) 
+    ax[0].semilogx(omega, mag_plot, label=label) 
     ax[0].set_title('Magnitude')
     ax[0].set_xlabel('Frequency (rad)')
     ax[0].set_ylabel('Mag (dB)')
     
-    phase_plot = np.angle(G_jw)
-    ax[1].semilogx(omega, phase_plot)
+    phase_plot = np.unwrap(np.angle(G_jw))
+    ax[1].semilogx(omega, 180/math.pi*phase_plot)
     ax[1].set_title('Phase')
     ax[1].set_xlabel('Frequency (rad)')
-    ax[1].set_ylabel('Freq (rad)')
+    ax[1].set_ylabel('Phase (rad)')
 
     fig.tight_layout(pad=1.5)
+    return fig, ax
 
 
 
@@ -488,22 +502,43 @@ def enel441_make_open_and_closed_loop_plots(t,r,d,n,y2,y1):
     plt.legend()
 
 
+def plot_input_to_plant(K,P,r,d,t):
+    L = K*P
+    S = 1/(1+L)
+    T = L/(1+L)   
 
-def enel441_root_locus(num,den,min_k,max_k):
-    if len(num[0][0]) == len(den[0][0]):
-        print('Nothing to do.')
-        num_padded = num[0][0]
-        print(num[0][0])
-        print(den[0][0])
-    else:
-        num_padded = np.concatenate((np.zeros(len(den[0][0])-len(num[0][0])), num[0][0]))
-        print('Numerator:', num_padded)
-        print('Denominator:', den[0][0])
-
-    fig, ax = plt.subplots(1,1)
-    for k in range(min_k,max_k):
-        den_closed_loop = den[0][0] + k*num_padded
-        closed_loop_poles = np.roots(den_closed_loop)
-        ax.plot(np.real(closed_loop_poles),np.imag(closed_loop_poles), 'k.' )
+    X_r = K*S
+    X_d = S
     
+    u_r = ct.forced_response(X_r,t,r) 
+    u_d = ct.forced_response(X_d,t,d) 
+
+    u = u_r.y + u_d.y
+
+    fig, ax = plt.subplots(1)
+    ax.plot(t, np.squeeze(u),label='Input to Car In Closed-Loop')
+    ax.set_title('Response of Plant input')
+    ax.set_xlabel('Time (s)')
+     
+    return fig, ax
+
+
+def enel441_root_locus(num,den,k_range):
+    N = len(k_range)
+
+    if len(num) == len(den):
+        print('Nothing to do.')
+        num_padded = num    
+    else:
+        num_padded = np.concatenate((np.zeros(len(den)-len(num)), num))
+
+    closed_loop_poles = np.zeros((N,den.shape[0]-1),dtype=np.csingle)
+    for ii in range(N):
+        den_closed_loop = den + k_range[ii]*num_padded
+        closed_loop_poles[ii,:] = np.roots(den_closed_loop)
+    
+    fig, ax = plt.subplots(1,1)
+    ax.plot(np.real(closed_loop_poles),np.imag(closed_loop_poles), 'k.' )
+    ax.plot(np.real(closed_loop_poles[0,:]),np.imag(closed_loop_poles[0,:]), 'ro' )
+    ax.plot(np.real(closed_loop_poles[-1,:]),np.imag(closed_loop_poles[-1,:]), 'bo' )
     return fig, ax
